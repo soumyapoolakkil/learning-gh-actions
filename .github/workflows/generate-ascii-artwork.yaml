@@ -1,0 +1,41 @@
+name: Generate ASCII Artwork
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  generate-artwork:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install cowsay
+        run: sudo apt-get update && sudo apt-get install -y cowsay
+
+      - name: Generate artwork.txt
+        run: |
+          cowsay "Hello from GitHub Actions!" > artwork.txt
+
+      - name: Show artwork
+        run: cat artwork.txt
+
+      - name: Commit artwork.txt
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add artwork.txt
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Generate ASCII artwork"
+            git push
+          fi
